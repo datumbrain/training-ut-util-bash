@@ -1,8 +1,8 @@
 #!/bin/bash
 
 usage() {
-	echo "Usage: $0 -o merge -i <dir> -p <dir> -f csv"
-	exit 1
+       echo "Usage: $0 -o merge -i <dir> -p <dir> -f csv"
+       exit 1
 }
 
 operation=""
@@ -12,32 +12,33 @@ format="json"
 
 while getopts ":o:i:p:f:" opt; do
 
-	case $opt in
-	       	o) operation="$OPTARG" ;;
-   		i) input_path="$OPTARG" ;;
-    		p) output_path="$OPTARG" ;;
-    		f) format="$OPTARG" ;;
-    		\?) echo "Invalid option:"; usage ;;
- 	 esac
+       case $opt in
+               o) operation="$OPTARG" ;;
+               i) input_path="$OPTARG" ;;
+               p) output_path="$OPTARG" ;;
+               f) format="$OPTARG" ;;
+               \?) echo "Invalid option:"; usage ;;
+        esac
 done
 
 if [[ ! -d "$input_path" ]]; then
-	echo "Input directory '$input_path' does not exist."
-	exit 1
+       echo "Input directory '$input_path' does not exist."
+       usage
+       exit 1
 fi
 
 output_file="$output_path/merged_data.$format"
 
 merged_data=""
 for file in "$input_path"/*.json; do
-	if [[ -f "$file" ]]; then
-		merged_data+=$(cat "$file")$'\n'
+       if [[ -f "$file" ]]; then
+               merged_data+=$(cat "$file")$'\n'
 fi
 done
 
 if [[ -z "$merged_data" ]]; then
-	echo " No JSONL files found in the input directory."
-	exit 0
+       echo " No JSONL files found in the input directory."
+       exit 0
 fi
 
 if [[ "$format" == "csv" ]]; then
@@ -51,6 +52,10 @@ else
 	echo "$merged_data" > "$output_file"
 fi
 
+if [[ ! -d "$output_path" ]]; then
+	echo "Output directory '$output_path' does not exist."
+	usage
+	exit 1
+fi
 
 echo "Merged data saved to: $output_file"
-
