@@ -21,10 +21,14 @@ while getopts ":o:i:p:f:" opt; do
         esac
 done
 
+if [[ "$operation" != "merge" ]]; then
+	echo "Only merge operation is possible"
+	usage
+fi
+
 if [[ ! -d "$input_path" ]]; then
        echo "Input directory '$input_path' does not exist."
-       usage
-       exit 1
+       usage       
 fi
 
 output_file="$output_path/merged_data.$format"
@@ -55,7 +59,6 @@ fi
 if [[ ! -d "$output_path" ]]; then
 	echo "Output directory '$output_path' does not exist."
 	usage
-	exit 1
 fi
 
 echo "Merged data saved to: $output_file"
