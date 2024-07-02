@@ -46,12 +46,9 @@ if [[ -z "$merged_data" ]]; then
 fi
 
 if [[ "$format" == "csv" ]]; then
-	echo "$merged_data" | jq -r '
-  map(if type == "array" then .[] else . end) |
-  (.[0] | to_entries | map(.key)) as $keys |
-  $keys, map(. as $value | $keys[] as $key | [$key, $value[$key]])[] | @csv
-  ' > "$output_path/output.csv"
-	output_file="$output_path/output.csv"
+	headers=$(echo "$merged_data" | grep -oP '"\K[^"]+(?=":)' | sort -u | tr '\n' ',' | sed 's/,$//')
+	echo "$headers" > "$output_file"
+	echo "$merged_data" | grep -oP ':\K[^,}]+(?=[,}])' | tr -d '"' | paste -sd, - >> "$output_file"
 else
 	echo "$merged_data" > "$output_file"
 fi
